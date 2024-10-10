@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  webapp:
+     build:
+     context: .
+     docker: Dockerfile
+    image: node:20.18.0-bookworm-slim
+    ports:
+      - "4000:4000"
+    volumes:
+      - .:/code
+      - logvolume01:/var/log
+    links:
+      - redis
+  redis:
+    image: redis
+    command: yarn start
+    environment:
+      NODE_ENV: development
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/send-message"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+volumes:
+  node_modules: {}
